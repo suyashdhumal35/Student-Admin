@@ -1,8 +1,17 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../redux/authActions';
 
-const Header = ({ isLoggedIn, isAdmin, onLogout }) => {
+const Header = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user, isAdmin, isAuthenticated } = useSelector(state => state.auth);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/login');
+  };
 
   return (
     <header className="bg-blue-600 text-white shadow-md">
@@ -13,8 +22,11 @@ const Header = ({ isLoggedIn, isAdmin, onLogout }) => {
         >
           Student Management System
         </h1>
-        {isLoggedIn && (
+        {isAuthenticated && (
           <div className="flex items-center space-x-4">
+            <span className="font-medium">
+              Welcome, {user?.username || 'User'}
+            </span>
             {isAdmin && (
               <button 
                 onClick={() => navigate('/admin')}
@@ -24,7 +36,7 @@ const Header = ({ isLoggedIn, isAdmin, onLogout }) => {
               </button>
             )}
             <button 
-              onClick={onLogout}
+              onClick={handleLogout}
               className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-md transition-colors"
             >
               Logout

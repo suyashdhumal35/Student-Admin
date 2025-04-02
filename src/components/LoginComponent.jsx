@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../redux/authActions';
 import data from '../data/data.json';
 
 const LoginComponent = ({ onLoginSuccess }) => {
@@ -8,6 +10,7 @@ const LoginComponent = ({ onLoginSuccess }) => {
   const [error, setError] = useState('');
   const [isAdminLogin, setIsAdminLogin] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -18,16 +21,17 @@ const LoginComponent = ({ onLoginSuccess }) => {
         (a) => a.username === username && a.password === password
       );
       if (admin) {
-        localStorage.setItem('userData', JSON.stringify({ ...admin, isAdmin: true }));
+        const userData = { ...admin, isAdmin: true };
+        dispatch(loginSuccess(userData));
         onLoginSuccess(true);
         navigate('/students');
       } else {
         setError('Invalid admin credentials');
       }
     } else {
-      // Student login logic (if you have student credentials)
-      // For now, we'll just allow any student to login since we don't have credentials
-      localStorage.setItem('userData', JSON.stringify({ username, isAdmin: false }));
+      // Student login logic
+      const userData = { username, isAdmin: false };
+      dispatch(loginSuccess(userData));
       onLoginSuccess(false);
       navigate('/students');
     }
